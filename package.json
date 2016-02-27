@@ -1,6 +1,6 @@
 {
-  "name": "ddos",
-  "version": "0.1.11",
+  "name": "anti-ddos",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/rook2pawn/node-ddos.git"
+    "url": "git://github.com/ohomer/node-ddos.git"
   },
   "keywords": [
     "ddos",
@@ -18,9 +18,9 @@
   "author": "David Wee <rook2pawn@gmail.com> (http://rook2pawn.com)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/rook2pawn/node-ddos/issues"
+    "url": "https://github.com/ohomer/node-ddos/issues"
   },
-  "homepage": "https://github.com/rook2pawn/node-ddos",
+  "homepage": "https://github.com/ohomer/node-ddos",
   "devDependencies": {
     "express": "",
     "koa": "^1.1.2",
@@ -31,7 +31,5 @@
     "tape": ""
   },
   "dependencies": {
-    "hashish": "",
-    "response": "https://github.com/mikeal/response/archive/master.tar.gz"
   }
 }

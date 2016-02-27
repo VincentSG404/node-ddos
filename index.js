@@ -1,5 +1,3 @@
-var Hash = require('hashish')
-var response = require('response')
 var ddos = function(params) {
     // burst, maxexpiry, checkinterval is in seconds
     // limit is the maximum count
@@ -20,11 +18,11 @@ var ddos = function(params) {
         if ((params.burst !== undefined) && (params.limit === undefined)) {
             params.limit = params.burst * 4;
         }
-        if (params.limit != undefined) {
+        if (params.limit != undefined)
             params.maxcount = params.limit * 2;
-        }
-        Hash(_params).update(params)
-        params = _params
+
+        params = Object.assign(_params, params)
+
     }
     if (!params.silentStart)
         console.log("ddos: starting params: ", params)
@@ -50,25 +48,30 @@ var ddos = function(params) {
         if (params.testmode) {
             console.log('ddos: handle: beginning:', table)
         }
-        var host = (req.headers['x-forwarded-for'] || req.connection.remoteAddress) + "#" + req.headers['user-agent']
-        if (!table[host])
-            table[host] = { count : 1, expiry : 1 }
+        var host = req.ip || req.connection.remoteAddress
+        var entry = table[host]
+        if (!entry) {
+            entry = { count: 1, expiry: 1 }
+            table[ host ] = entry
+        }
         else {
-            table[host].count++
-            if (table[host].count > params.maxcount) 
-                table[host].count = params.maxcount
-            if (table[host].count > params.burst) {
-                if (table[host].expiry < params.maxexpiry) 
-                    table[host].expiry = Math.min(params.maxexpiry,table[host].expiry * 2)
+            entry.count++
+            if (entry.count > params.maxcount)
+                entry.count = params.maxcount
+            if (entry.count > params.burst) {
+                if (entry.expiry < params.maxexpiry)
+                    entry.expiry = Math.min(params.maxexpiry,entry.expiry * 2)
             } else {
-                table[host].expiry = 1;
+                entry.expiry = 1;
             }
         }
-        if (table[host].count > params.limit) {
+
+        if (entry.count > params.limit) {
             if (!params.silent)
-                console.log('ddos: denied: entry:', host, table[host])
+                console.log('ddos: denied: entry:', host, entry)
             if (params.testmode) {
-                response.json(table[host]).status(params.responseStatus).pipe(res)
+                res.status(params.responseStatus)
+                res.json(entry)
             } else {
                 res.writeHead(params.responseStatus);
                 res.end(params.errormessage);
@@ -84,7 +87,7 @@ var ddos = function(params) {
         if (params.testmode) {
             console.log('ddos: handle: beginning:', table)
         }
-        var host = this.request.ip + "#" + this.request.headers['user-agent']
+        var host = this.request.ip
         if (!table[host])
             table[host] = { count : 1, expiry : 1 }
         else {
@@ -101,13 +104,14 @@ var ddos = function(params) {
         if (table[host].count > params.limit) {
             console.log('ddos: denied: entry:', host, table[host])
             if (params.testmode) {
-                response.json(table[host]).status(params.responseStatus).pipe(res)
+                res.status(params.responseStatus)
+                response.json(table[host])
             } else {
                 res.writeHead(params.responseStatus);
                 res.end(params.errormessage);
             }
         } else {         
-          yield next
+          yield * next
         }
         if (params.testmode) {
             console.log('ddos: handle: end:', table)
