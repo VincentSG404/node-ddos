@@ -32,7 +32,7 @@ var ddos = function(params) {
         var keys = Object.keys(table)
         for (var i = 0; i < keys.length; i++) {
             var key = keys[i]
-            table[key].expiry -= params.checkinterval;
+            table[key].expiry -= 1;
             if (table[key].expiry <= 0) 
                 delete table[key]
         }
